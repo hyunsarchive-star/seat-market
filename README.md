@@ -17,3 +17,4 @@
 
 ## 로컬 테스트
 cp .dev.vars.example .dev.vars  →  npx wrangler pages dev
+배포 설정 업데이트
