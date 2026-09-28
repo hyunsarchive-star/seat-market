@@ -1,0 +1,7 @@
+name = "oct-realestate"
+pages_build_output_dir = "./public"
+compatibility_date = "2025-01-01"
+
+[[kv_namespaces]]
+binding = "SEATS"
+id = "여기에_KV_네임스페이스_ID"
