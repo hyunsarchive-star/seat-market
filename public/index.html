@@ -1,235 +1,521 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>10월 부동산</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f4ef;--card:#fff;--tx:#1f2328;--sub:#6b7280;--bd:#cfc9bb;--ac:#2f6f4f;--good:#2f6f4f;--bad:#c2410c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171a;--card:#1e2126;--tx:#e8e8e8;--sub:#9aa0a6;--bd:#3d4148;--ac:#5fb98a;--good:#5fb98a;--bad:#f0895a}}
-:root[data-theme="dark"]{--bg:#15171a;--card:#1e2126;--tx:#e8e8e8;--sub:#9aa0a6;--bd:#3d4148;--ac:#5fb98a;--good:#5fb98a;--bad:#f0895a}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+/* 레이아웃: 둥근 파스텔 카드 + 교실 자리배치도(알약형 자리) + 월 탭과 변동 표 */
+:root{
+  --bg:#f0eafb;--card:#ffffff;--tx:#3e3452;--sub:#8a80a3;--line:#e1d7f4;
+  --pink:#8063d8;--on-accent:#ffffff;--mint:#2fae80;--coral:#e8665c;--hl:#e8defa;--pill:rgba(255,255,255,.82);
+  --shadow:0 10px 26px rgba(110,80,180,.15);--tile-up:130,214,176;--tile-dn:255,150,140;
+  --font-display:"Jua","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  --font-body:-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1f1b2b;--card:#2b2639;--tx:#efe9fa;--sub:#a99fc2;--line:#40375a;
+  --pink:#b9a2ff;--on-accent:#251a45;--mint:#6fd8a6;--coral:#ff8d82;--hl:#3a3156;--pill:rgba(0,0,0,.3);
+  --shadow:0 10px 26px rgba(0,0,0,.4);--tile-up:60,150,115;--tile-dn:170,80,78;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1f1b2b;--card:#2b2639;--tx:#efe9fa;--sub:#a99fc2;--line:#40375a;
+  --pink:#b9a2ff;--on-accent:#251a45;--mint:#6fd8a6;--coral:#ff8d82;--hl:#3a3156;--pill:rgba(0,0,0,.3);
+  --shadow:0 10px 26px rgba(0,0,0,.4);--tile-up:60,150,115;--tile-dn:170,80,78;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.5}
-main{max-width:820px;margin:0 auto;padding:16px}
-.title{border:1.5px solid var(--tx);text-align:center;font-size:1.5rem;font-weight:700;padding:8px;margin:0 auto;max-width:300px}
-h2{font-size:1rem;margin:0 0 8px}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--font-body);font-size:15px;line-height:1.5;
+  padding-block:20px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.head{text-align:center}
+.title{display:inline-block;background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:10px 34px;font-family:var(--font-display);font-size:1.8rem;line-height:1.3}
+h2{font-family:var(--font-display);font-weight:400;font-size:1.15rem;margin:0 0 10px}
 .sub{color:var(--sub);font-size:.85rem}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-top:14px}
+.card{background:var(--card);box-shadow:var(--shadow);border-radius:34px;padding:20px;min-width:0}
 input,button,textarea{font:inherit;color:var(--tx)}
-input,textarea{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px;width:100%}
-button{border:1px solid var(--bd);background:var(--card);border-radius:8px;padding:8px 12px;cursor:pointer}
-button.pri{background:var(--ac);border-color:var(--ac);color:#fff}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
-.wrap{overflow-x:auto}
-#map{display:grid;gap:0;min-width:620px;grid-template-columns:134fr 133fr 113fr 122fr 108fr 135fr 135fr;grid-template-rows:76px 76px 76px 76px 76px 50px 76px 68px}
-.seat{width:100%;height:100%;border-radius:0;border:2px solid var(--tx);padding:2px;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:.8rem;line-height:1.3;background:var(--card)}
-.seat b{font-size:1rem}
-.seat.sel{outline:3px solid var(--ac);outline-offset:-5px}
-.mid{display:flex;align-items:center;justify-content:center;text-align:center;font-size:.78rem;padding:4px 10px;color:var(--sub)}
-.opts{display:flex;gap:6px;flex-wrap:wrap}
-.opts button.on-g{background:var(--good);color:#fff;border-color:var(--good)}
-.opts button.on-b{background:var(--bad);color:#fff;border-color:var(--bad)}
-.rv{border-top:1px solid var(--bd);padding:8px 0;font-size:.9rem}
-.g{color:var(--good)}.b{color:var(--bad)}
-ol{padding-left:22px;margin:0}
-label{font-size:.8rem;color:var(--sub);display:block}
-.badge{font-size:.7rem;color:var(--good)}
+input,textarea{background:var(--bg);border:2px solid var(--line);border-radius:20px;padding:9px 15px;width:100%}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+button{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:8px 18px;cursor:pointer}
+button.pri{background:var(--pink);border-color:var(--pink);color:var(--on-accent);font-weight:700}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+label{font-size:.8rem;color:var(--sub);display:block;margin-bottom:3px}
+.tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.tab{font-family:var(--font-display);font-size:1.05rem;padding:8px 22px}
+.tab.on{background:var(--pink);border-color:var(--pink);color:var(--on-accent)}
+.wrap{overflow-x:auto;padding:6px}
+#map{display:grid;gap:8px;min-width:600px;grid-template-columns:134fr 133fr 113fr 122fr 108fr 135fr 135fr;grid-template-rows:84px 84px 64px 84px 84px 30px 84px 78px}
+.seat{position:relative;width:100%;height:100%;border:0;border-radius:42px;padding:4px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1px;background:var(--card);box-shadow:var(--shadow),inset 0 -4px 0 rgba(0,0,0,.05);transition:transform .12s}
+.seat:active{transform:scale(.94)}
+.seat b{font-family:var(--font-display);font-weight:400;font-size:1.1rem}
+.seat .pr{font-weight:800;font-size:1rem;font-variant-numeric:tabular-nums}
+.seat .lock{position:absolute;top:6px;right:16px;font-size:.72rem;font-style:normal}
+.seat.sel{outline:4px solid var(--pink);outline-offset:2px}
+.pill{font-size:.66rem;padding:1px 8px;border-radius:999px;background:var(--pill);white-space:nowrap}
+.up{color:var(--mint)}.dn{color:var(--coral)}
+.badge{font-size:.72rem;color:var(--mint)}
+.mid{display:flex;align-items:center;justify-content:center;text-align:center;font-size:.78rem;padding:8px 16px;color:var(--sub)}
+.mid.t2{font-family:var(--font-display);font-size:1.1rem;color:var(--tx)}
+.mid.bubble{background:var(--card);box-shadow:var(--shadow);border-radius:40px;font-size:.84rem;line-height:1.7;color:var(--tx)}
+.opts{display:flex;gap:7px;flex-wrap:wrap}
+.opts button.on-g{background:var(--mint);color:#fff;border-color:var(--mint)}
+.opts button.on-b{background:var(--coral);color:#fff;border-color:var(--coral)}
+.rv{border-top:2px dotted var(--line);padding:9px 0;font-size:.9rem}
+.hist{margin-top:12px;background:var(--hl);border-radius:24px;padding:12px 16px;font-size:.88rem}
+.g{color:var(--mint)}.b{color:var(--coral)}
+ol{padding-left:24px;margin:0}
+li{padding:2px 0}
+table{width:100%;border-collapse:separate;border-spacing:0 5px;font-size:.82rem;text-align:center;font-variant-numeric:tabular-nums}
+th{color:var(--sub);font-weight:400;padding:2px 6px;white-space:nowrap}
+td{padding:7px 7px;background:var(--bg);white-space:nowrap}
+td:first-child{border-radius:999px 0 0 999px;font-family:var(--font-display);font-size:.95rem}
+td:last-child{border-radius:0 999px 999px 0}
+tr.sel td{background:var(--hl)}
+tbody tr{cursor:pointer}
+td small{display:block;font-size:.68rem}
+details summary{cursor:pointer;margin:8px 0}
+hr{border:0;border-top:2px dotted var(--line);margin:18px 0}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.grp{margin-top:12px}
+.grp>.sub{margin-bottom:6px}
+.chip{padding:6px 14px;font-size:.85rem;border-width:2px}
+.chip.p{border-color:rgba(var(--tile-up),.95)}
+.chip.n{border-color:rgba(var(--tile-dn),.95)}
+.chip.on{background:var(--pink);border-color:var(--pink);color:var(--on-accent)}
+.chip .x{margin-left:8px;opacity:.7}
+.sumrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.sp{padding:7px 16px;border-radius:999px;background:var(--hl);font-weight:700}
+.sp.tot{background:var(--pink);color:var(--on-accent)}
+@media (prefers-reduced-motion:reduce){.seat{transition:none}}
+a{color:inherit}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
+
+
+<div class="head"><div class="title">🏠 우리반 부동산</div></div>
 <main>
-<div class="title">10월 부동산</div>
-<div class="sub" id="status" style="text-align:center;margin-top:6px"></div>
+<div class="sub" id="status" style="text-align:center"></div>
+<div class="tabs" id="previewBar" hidden><button id="previewBtn" type="button"></button></div>
+<div class="tabs" id="tabs" hidden></div>
 
 <section class="card" id="nameCard">
-  <label>내 이름</label>
+  <label for="me">내 이름</label>
   <input id="me" placeholder="이름 입력" maxlength="12" style="max-width:240px">
 </section>
 
 <section class="card">
   <h2 id="mapTitle">자리를 눌러 호/불호를 평가해 주세요</h2>
-  <div class="wrap"><div id="map"></div></div>
+  <div class="wrap" id="mapWrap"><div id="map"></div></div>
 </section>
 
 <section class="card" id="panel" hidden>
   <h2 id="ptitle"></h2>
   <div id="pinfo" class="sub"></div>
   <div id="stuBox">
-    <div style="margin:10px 0 6px"><label>호 / 불호와 강도</label></div>
+    <div style="margin:12px 0 6px"><label>호 / 불호와 강도</label></div>
     <div class="opts" id="opts"></div>
-    <div style="margin-top:10px"><label>이유 (필수)</label><textarea id="reason" rows="2" maxlength="120" placeholder="예: 창가라 햇빛이 좋아요"></textarea></div>
-    <div class="row" style="margin-top:8px"><button class="pri" id="save">평가 저장</button><span class="sub" id="msg"></span></div>
+    <div style="margin-top:16px"><label>이유 (필수 · 해당하는 걸 모두 눌러요)</label><div id="chipBox"></div></div>
+    <div class="row" style="margin-top:12px"><div style="flex:1;min-width:180px"><label for="newChip">원하는 이유가 없으면 직접 추가해요</label><input id="newChip" maxlength="30" placeholder="예: 에어컨 바람이 바로 와요"></div><button id="addChip" type="button">추가</button></div>
+    <div style="margin-top:12px"><label for="reason">더 하고 싶은 말 (선택)</label><textarea id="reason" rows="2" maxlength="120" placeholder="자유롭게 적어도 돼요"></textarea></div>
+    <div class="row" style="margin-top:12px"><button class="pri" id="save">평가 저장</button><span class="sub" id="msg"></span></div>
   </div>
+  <div id="seatHist"></div>
   <div style="margin-top:12px" id="rvs"></div>
 </section>
 
-<section class="card" id="tCard" hidden>
-  <h2>🔒 시세 순위 (교사 전용)</h2>
-  <div class="row" style="margin-bottom:8px">
-    <div><label>최대 하락(%)</label><input id="dn" type="number" value="30" style="width:90px"></div>
-    <div><label>최대 상승(%)</label><input id="up" type="number" value="70" style="width:90px"></div>
-    <div><label>9월 미입력 자리 기준가</label><input id="base" type="number" value="450" style="width:110px"></div>
-  </div>
-  <div class="sub" style="margin-bottom:8px">10월 가격 = 9월 가격 × (1 + 등락률). 점수 합계가 가장 낮은 자리는 최대 하락, 가장 높은 자리는 최대 상승이고 나머지는 그 사이예요. 상승폭이 하락폭보다 커서 전체적으로 오르는 장이 돼요. (10 단위 반올림)</div>
-  <details style="margin:8px 0"><summary>9월 시세 입력 (자리별)</summary><div id="sepGrid" class="row" style="margin-top:8px"></div><button id="sepSave" style="margin-top:8px">9월 시세 저장</button></details>
-  <ol id="rank"></ol>
-  <h2 style="margin-top:14px">💸 매도 의향 문의 대상 (시세차익 큰 순)</h2>
-  <ol id="sell"></ol>
-  <div class="sub" style="margin-top:10px" id="who"></div>
+<section class="card" id="hCard" hidden>
+  <h2>📈 자리 변동 내역</h2>
+  <div class="sub" style="margin-bottom:8px">9월 시세에서 시작해 달마다 이어서 계산해요. 줄을 누르면 위에서 자세히 볼 수 있어요.</div>
+  <div class="wrap"><table>
+    <thead><tr><th>자리</th><th>9월</th><th>10월</th><th>11월</th><th>12월</th><th>추이</th></tr></thead>
+    <tbody id="hBody"></tbody>
+  </table></div>
 </section>
-<div class="sub" style="text-align:center;margin:18px 0"><a href="#" id="tLogin" style="color:inherit">교사 로그인</a><span id="tOut" hidden> · <a href="#" id="tRef" style="color:inherit">새로고침</a> · <a href="#" id="tLogout" style="color:inherit">로그아웃</a></span></div>
+
+<section class="card" id="tCard" hidden>
+  <h2 id="rankTitle">🔒 시세 순위 (교사 전용)</h2>
+  <ol id="rank"></ol>
+  <h2 style="margin-top:18px">💸 매도 의향 문의 대상 (시세차익 큰 순)</h2>
+  <ol id="sell"></ol>
+  <div class="sub" style="margin-top:12px" id="who"></div>
+</section>
+
+<section class="card" id="sCard" hidden>
+  <h2>⚙️ 교사 설정</h2>
+  <label>학생이 지금 평가하는 달</label>
+  <div class="tabs" id="actRow" style="justify-content:flex-start;margin:4px 0 14px"></div>
+  <div class="row" style="margin-bottom:8px">
+    <div><label for="dn">최대 하락(%)</label><input id="dn" type="number" value="30" style="width:96px"></div>
+    <div><label for="up">최대 상승(%)</label><input id="up" type="number" value="70" style="width:96px"></div>
+    <div><label for="base">9월 미입력 자리 기준가</label><input id="base" type="number" value="450" style="width:120px"></div>
+  </div>
+  <div class="sub" style="margin-bottom:8px">달마다 점수 합계가 가장 낮은 자리는 최대 하락, 가장 높은 자리는 최대 상승이고 나머지는 그 사이예요. 새 달의 시작 가격은 지난달 가격이에요. (10 단위 반올림)</div>
+  <details><summary>9월 시세 입력 (자리별)</summary><div id="sepGrid" class="row" style="margin-top:8px"></div></details>
+  <button class="pri" id="cfgSave" style="margin-top:8px">설정·9월 시세 저장</button>
+  <hr>
+  <label>시세 확정</label>
+  <div class="sub" style="margin:2px 0 10px">확정하면 그 달 가격이 고정돼서 이후 평가가 와도 안 바뀌고, 변동 내역에 그대로 남아요.</div>
+  <button id="fixBtn"></button>
+  <hr>
+  <details><summary>처음 데이터 불러오기 (kv-seed.json)</summary>
+    <div class="sub" style="margin:6px 0">배포 후 한 번만 해요. 같은 자리·이름의 평가와 설정은 덮어써져요.</div>
+    <input type="file" id="seedFile" accept=".json,application/json">
+    <button id="seedBtn" style="margin-top:6px">불러오기</button>
+    <div class="sub" id="seedMsg"></div>
+  </details>
+</section>
+
+<div class="sub" style="text-align:center;margin:20px 0"><a href="#" id="tLogin">교사 로그인</a><span id="tOut" hidden> · <a href="#" id="tRef">새로고침</a> · <a href="#" id="tLogout">로그아웃</a></span></div>
 </main>
 
 <script>
 const $=id=>document.getElementById(id);
-// [번호, 열, 행]  — 사진의 배치 기준
+const el=(tag,txt,cls)=>{const e=document.createElement(tag);if(txt!=null)e.textContent=txt;if(cls)e.className=cls;return e};
 const SEATS=[['1-1',1,1],['1-2',2,1],['1-3',1,2],['1-4',2,2],
 ['5-1',6,1],['5-2',7,1],['5-3',6,2],['5-4',7,2],
 ['2-1',1,4],['2-2',2,4],['2-3',1,5],['2-4',2,5],
 ['4-1',6,4],['4-2',7,4],['4-3',6,5],['4-4',7,5],
 ['3-1',4,7],['3-2',5,7],['3-3',3,8],['3-4',4,8],['3-5',5,8]];
-const COND='고려된 입지 조건<br>일조권(햇빛), 교육환경(TV와 칠판, 선생님 시야), 접근성(문/사물함 등 교실 내 편의시설), 생활환경(짝이 많음, 주변이 시끄러움, 구석이라 편함), 프라이버시 등';
-let isTeacher=false, ratings=[], sel=null, pick=null, mine={};
-try{mine=JSON.parse(localStorage.getItem('seat10-mine')||'{}')}catch(e){}
-try{$('me').value=localStorage.getItem('seat10-me')||''}catch(e){}
-$('me').oninput=()=>{try{localStorage.setItem('seat10-me',$('me').value)}catch(e){}render()};
-const hid=s=>{let h=5381;for(const c of s)h=((h<<5)+h+c.codePointAt(0))>>>0;return 'r'+h.toString(36)+s.length.toString(36)};
-const key=seat=>$('me').value.trim()+'|'+seat;
+const IDS=SEATS.map(x=>x[0]);
+const MONTHS=[10,11,12];
+const COND='고려할 입지 조건<br>☀️ 햇빛·온도<br>📺 TV·칠판·시야<br>🚪 문·사물함·급식<br>🏘️ 짝·소음·구석<br>🔒 프라이버시';
 
-function stats(seat){
-  const rs=ratings.filter(r=>r.seat===seat);
+const T=()=>isTeacher&&!asStudent;
+let isTeacher=false, asStudent=false, ratings=[], sel=null, pick=null, mine={}, sep={}, fixed={}, params={dn:30,up:70,base:450};
+let active=10, view=10, locked=[], C=null, armed=null, pw='', timer=null;
+try{pw=sessionStorage.getItem('seat-pw')||''}catch(e){}
+const api=(path,opt={})=>fetch('/api/'+path,{...opt,headers:{'content-type':'application/json','x-admin':pw}});
+const norm=r=>({...r,month:r.month||10,tags:r.tags||[],reason:r.reason!=null?r.reason:[...(r.tags||[]),r.extra||''].filter(Boolean).join(' · ')});
+try{mine=JSON.parse(localStorage.getItem('seat-mine-v3')||'{}')}catch(e){}
+try{$('me').value=localStorage.getItem('seat-me')||''}catch(e){}
+$('me').oninput=()=>{try{localStorage.setItem('seat-me',$('me').value)}catch(e){}render()};
+const key=seat=>`${$('me').value.trim()}|${active}|${seat}`;
+// ---------- 가격 계산: 9월 → 10월 → 11월 → 12월 이어서
+function stats(seat,m){
+  const rs=ratings.filter(r=>r.month===m&&r.seat===seat);
   const pos=rs.filter(r=>r.score>0).reduce((a,r)=>a+r.score,0);
   const neg=rs.filter(r=>r.score<0).reduce((a,r)=>a-r.score,0);
   return {rs,pos,neg,net:pos-neg};
 }
-function prices(){
-  const dn=parseFloat($('dn').value)||0, up=parseFloat($('up').value)||0, def=parseFloat($('base').value)||450;
-  const nets=SEATS.map(x=>stats(x[0]).net), mn=Math.min(...nets), mx=Math.max(...nets);
-  const out={};
-  SEATS.forEach((x,i)=>{
-    const t=mx===mn?.5:(nets[i]-mn)/(mx-mn), prev=+sep[x[0]]||def;
-    const price=Math.max(10,Math.round(prev*(1+(-dn+t*(dn+up))/100)/10)*10);
-    out[x[0]]={t,prev,price,ch:price-prev,pct:Math.round((price-prev)/prev*100)};
-  });
+function calc(){
+  const dn=params.dn||0, up=params.up||0, def=params.base||450;
+  const out={}, prevMap={};
+  IDS.forEach(id=>prevMap[id]=+sep[id]||def);
+  for(const m of MONTHS){
+    out[m]={};
+    const fx=fixed[m], hasData=ratings.some(r=>r.month===m);
+    const st=IDS.map(id=>stats(id,m)), nets=st.map(s=>s.net), mn=Math.min(...nets), mx=Math.max(...nets);
+    IDS.forEach((id,i)=>{
+      const prev=prevMap[id], t=mx===mn?.5:(nets[i]-mn)/(mx-mn);
+      let price,state;
+      if(fx&&fx[id]!=null){price=fx[id];state='fixed'}
+      else if(hasData){price=Math.max(10,Math.round(prev*(1+(-dn+t*(dn+up))/100)/10)*10);state='live'}
+      else{price=prev;state='wait'}
+      out[m][id]={prev,price,ch:price-prev,pct:Math.round((price-prev)/prev*100),state,...st[i]};
+    });
+    IDS.forEach(id=>prevMap[id]=out[m][id].price);
+  }
   return out;
 }
-const chTxt=p=>`${p.ch>=0?'▲ +':'▼ '}${p.ch} (${p.pct>=0?'+':''}${p.pct}%)`;
-function el(tag,txt,cls){const e=document.createElement(tag);if(txt!=null)e.textContent=txt;if(cls)e.className=cls;return e}
+const chTxt=p=>p.state==='wait'?'평가 대기':`${p.ch>=0?'▲':'▼'}${Math.abs(p.ch)} (${Math.abs(p.pct)}%)`;
+const chFull=p=>`${p.ch>=0?'▲ +':'▼ '}${p.ch} (${p.pct>=0?'+':''}${p.pct}%)`;
 
+function spark(vals){
+  const W=64,H=22,mn=Math.min(...vals),mx=Math.max(...vals),rg=mx-mn||1;
+  const pts=vals.map((v,i)=>[2+i*(W-4)/Math.max(1,vals.length-1),H-3-(v-mn)/rg*(H-6)]);
+  const NS='http://www.w3.org/2000/svg',s=document.createElementNS(NS,'svg');
+  s.setAttribute('width',W);s.setAttribute('height',H);s.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const pl=document.createElementNS(NS,'polyline');
+  pl.setAttribute('points',pts.map(p=>p.join(',')).join(' '));pl.setAttribute('fill','none');pl.setAttribute('stroke','currentColor');
+  pl.setAttribute('stroke-width','2.5');pl.setAttribute('stroke-linecap','round');pl.setAttribute('stroke-linejoin','round');
+  const c=document.createElementNS(NS,'circle'),l=pts[pts.length-1];
+  c.setAttribute('cx',l[0]);c.setAttribute('cy',l[1]);c.setAttribute('r','3');c.setAttribute('fill','currentColor');
+  s.append(pl,c);return s;
+}
+
+// ---------- 화면
 function render(){
+  C=T()?calc():null;
+  const P=C?C[view]:null;
+  renderPreviewBar();renderTabs();
   const map=$('map');map.innerHTML='';
-  const P=isTeacher?prices():null;
-  const c1=el('div','',null);c1.className='mid';c1.style.cssText='grid-column:3/6;grid-row:3';
-  c1.textContent=isTeacher?'10월 부동산 시세':'10월 자리 평가';map.appendChild(c1);
-  const c2=el('div','','mid');c2.style.cssText='grid-column:3/6;grid-row:4/6';c2.innerHTML=COND;map.appendChild(c2);
+  const c1=el('div',T()?`${view}월 부동산 시세`:`${active}월 자리 평가`,'mid t2');c1.style.cssText='grid-column:3/6;grid-row:3';map.appendChild(c1);
+  const c2=el('div','','mid bubble');c2.style.cssText='grid-column:3/6;grid-row:4/6';c2.innerHTML=COND;map.appendChild(c2);
   SEATS.forEach(([id,c,r])=>{
     const b=el('button','','seat'+(sel===id?' sel':''));b.style.gridColumn=c;b.style.gridRow=r;
     b.appendChild(el('b',id));
-    if(isTeacher){
+    if(T()){
       const p=P[id];
-      b.appendChild(el('span',p.price));
-      b.appendChild(el('span',chTxt(p),p.ch>=0?'g':'b'));
-      const a=Math.min(.6,.1+Math.abs(p.pct)/100);
-      b.style.background=p.ch>=0?`rgba(47,143,90,${a})`:`rgba(217,102,40,${a})`;
+      b.appendChild(el('span',p.price,'pr'));
+      b.appendChild(el('span',chTxt(p),'pill '+(p.state==='wait'?'':p.ch>=0?'up':'dn')));
+      if(p.state==='fixed')b.appendChild(el('i','🔒','lock'));
+      if(p.state!=='wait'){
+        const a=Math.min(.75,.22+Math.abs(p.pct)/90);
+        b.style.background=`rgba(${p.ch>=0?'var(--tile-up)':'var(--tile-dn)'},${a})`;
+      }
     }else if(mine[key(id)]){
       b.appendChild(el('span','✔ 평가함','badge'));
     }
-    b.onclick=()=>{sel=id;pick=null;$('reason').value='';$('msg').textContent='';
-      const m=mine[key(id)];if(m){pick=m.score;$('reason').value=m.reason}render()};
+    b.onclick=()=>{sel=id;pick=null;tags=[];$('reason').value='';$('msg').textContent='';
+      const m=mine[key(id)];if(m){pick=m.score;tags=[...(m.tags||[])];$('reason').value=m.extra!=null?m.extra:(m.tags?'':(m.reason||''))}render()};
     map.appendChild(b);
   });
-  $('nameCard').hidden=isTeacher;
-  $('mapTitle').textContent=isTeacher?'자리별 시세 (교사 전용)':'자리를 눌러 호/불호를 평가해 주세요';
-  renderPanel();renderRank();
+  $('nameCard').hidden=T();
+  $('mapTitle').textContent=T()?`${view}월 자리별 시세 (교사 전용)`:`${active}월 · 자리를 눌러 호/불호를 평가해 주세요`;
+  renderPanel();renderHistory();renderTeacher();fitMap();
+}
+// 폰처럼 좁은 화면에서는 자리배치도를 화면 너비에 맞게 줄여서 옆으로 스크롤하지 않게 함
+function fitMap(){
+  const m=$('map'),w=$('mapWrap'),mw=T()?600:470;
+  m.style.minWidth=mw+'px';m.style.zoom='';
+  const k=Math.min(1,(w.clientWidth-12)/mw);
+  if(k<1)m.style.zoom=k;
+}
+window.addEventListener('resize',fitMap);
+function renderPreviewBar(){
+  $('previewBar').hidden=!isTeacher;
+  $('previewBtn').textContent=asStudent?'🔙 교사 화면으로 돌아가기':'👀 학생 화면 미리보기';
+  if(asStudent)$('status').textContent='학생 화면 미리보기 중이에요 (저장되지 않아요)';
+}
+$('previewBtn').onclick=()=>{asStudent=!asStudent;sel=null;pick=null;tags=[];$('msg').textContent='';
+  if(!asStudent)$('status').textContent=`교사 화면 · 평가 ${ratings.length}건`;render()};
+function renderTabs(){
+  const t=$('tabs');t.innerHTML='';t.hidden=!T();if(!T())return;
+  MONTHS.forEach(m=>{
+    const b=el('button',`${m}월`+(m===active?' · 평가중':'')+(fixed[m]?' 🔒':''),'tab'+(m===view?' on':''));
+    b.onclick=()=>{view=m;armed=null;render()};t.appendChild(b);
+  });
 }
 function renderPanel(){
   $('panel').hidden=sel==null;if(sel==null)return;
   $('ptitle').textContent=sel+' 자리';
-  $('stuBox').hidden=isTeacher;
-  const box=$('rvs');box.innerHTML='';
-  if(isTeacher){
-    const s=stats(sel),p=prices()[sel];
-    $('pinfo').textContent=`9월 ${p.prev} → 10월 ${p.price} ${chTxt(p)} · 호 +${s.pos} / 불호 −${s.neg} (합계 ${s.net>0?'+':''}${s.net})`;
-    if(!s.rs.length)box.appendChild(el('div','아직 평가가 없어요.','sub'));
-    s.rs.forEach(r=>{const d=el('div','','rv');d.appendChild(el('b',r.name+' '));
+  $('stuBox').hidden=T();
+  const box=$('rvs');box.innerHTML='';const sh=$('seatHist');sh.innerHTML='';
+  if(T()){
+    const p=C[view][sel];
+    $('pinfo').textContent=p.state==='wait'
+      ? `${view}월 평가 대기 중 · 시작가 ${p.prev}`
+      : `${view}월: ${p.prev} → ${p.price} ${chFull(p)} · 호 +${p.pos} / 불호 −${p.neg} (합계 ${p.net>0?'+':''}${p.net})`;
+    const ups=p.rs.filter(r=>r.score>0),dns=p.rs.filter(r=>r.score<0);
+    const sm=el('div','','sumrow');
+    sm.appendChild(el('span',`👍 호 +${p.pos} (${ups.length}명)`,'sp g'));
+    sm.appendChild(el('span',`👎 불호 −${p.neg} (${dns.length}명)`,'sp b'));
+    sm.appendChild(el('span',`합계 ${p.net>0?'+':''}${p.net}`,'sp tot'));
+    sh.appendChild(sm);
+    const h=el('div','','hist');h.appendChild(el('div','📈 월별 변동','sub'));
+    h.appendChild(el('div',`9월 ${C[10][sel].prev}`));
+    MONTHS.forEach(m=>{const q=C[m][sel];if(q.state!=='wait')h.appendChild(el('div',`${m}월 ${q.price}  ${chFull(q)}`,q.ch>=0?'g':'b'))});
+    sh.appendChild(h);
+    const cnt={};p.rs.forEach(r=>(r.tags||[]).forEach(t=>cnt[t]=(cnt[t]||0)+1));
+    const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);
+    if(top.length){const tg=el('div','','hist');tg.appendChild(el('div',`🏷️ ${view}월에 많이 나온 이유`,'sub'));
+      const cs=el('div','','chips');cs.style.marginTop='6px';
+      top.forEach(([t,n])=>{const s=el('span',`${t} ×${n}`,'pill');s.style.cssText='font-size:.8rem;padding:3px 11px';cs.appendChild(s)});
+      tg.appendChild(cs);sh.appendChild(tg)}
+    if(!p.rs.length)box.appendChild(el('div',`${view}월 평가가 아직 없어요.`,'sub'));
+    [...p.rs].sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name,'ko')).forEach(r=>{const d=el('div','','rv');d.appendChild(el('b',r.name+' '));
       d.appendChild(el('span',(r.score>0?'+':'')+r.score,r.score>0?'g':'b'));d.appendChild(el('div',r.reason));box.appendChild(d)});
     return;
   }
-  $('pinfo').textContent='다른 친구의 평가와 가격은 공개되지 않아요.';
-  const o=$('opts');o.innerHTML='';
+  $('pinfo').textContent=locked.includes(active)?`${active}월 평가는 마감됐어요.`:'다른 친구의 평가와 가격은 공개되지 않아요.';
+  const o=$('opts');o.innerHTML='';renderChips();
   [5,4,3,2,1,-1,-2,-3,-4,-5].forEach(v=>{
     const b=el('button',v>0?`👍 +${v}`:`👎 ${v}`);if(pick===v)b.className=v>0?'on-g':'on-b';
     b.onclick=()=>{pick=v;renderPanel()};o.appendChild(b);
   });
 }
-function renderRank(){
-  $('tCard').hidden=!isTeacher;if(!isTeacher)return;
-  const P=prices(),ol=$('rank');ol.innerHTML='';
-  const all=SEATS.map(x=>({id:x[0],...stats(x[0]),...P[x[0]]}));
-  [...all].sort((a,b)=>b.price-a.price||b.net-a.net)
-    .forEach(a=>ol.appendChild(el('li',`${a.id} — 9월 ${a.prev} → 10월 ${a.price} ${chTxt(a)} · 합계 ${a.net>0?'+':''}${a.net}, ${a.rs.length}명`)));
-  const sl=$('sell');sl.innerHTML='';
-  all.filter(a=>a.ch>0).sort((a,b)=>b.ch-a.ch).forEach(a=>sl.appendChild(el('li',`${a.id} — 차익 +${a.ch} (${a.prev} → ${a.price})`)));
-  const names=[...new Set(ratings.map(r=>r.name))];
-  $('who').textContent=`참여 학생 ${names.length}명: ${names.join(', ')||'-'}`;
+function renderHistory(){
+  $('hCard').hidden=!T();if(!T())return;
+  const body=$('hBody');body.innerHTML='';
+  [...IDS].sort().forEach(id=>{
+    const tr=document.createElement('tr');if(sel===id)tr.className='sel';
+    tr.appendChild(el('td',id));
+    tr.appendChild(el('td',C[10][id].prev));
+    const vals=[C[10][id].prev];
+    MONTHS.forEach(m=>{
+      const p=C[m][id],td=el('td');
+      if(p.state==='wait')td.textContent='-';
+      else{vals.push(p.price);td.appendChild(el('span',p.price+(p.state==='fixed'?' 🔒':'')));td.appendChild(el('small',chFull(p),p.ch>=0?'g':'b'))}
+      tr.appendChild(td);
+    });
+    const tt=el('td');
+    if(vals.length>1){tt.className=vals[vals.length-1]>=vals[0]?'g':'b';tt.appendChild(spark(vals))}else tt.textContent='-';
+    tr.appendChild(tt);
+    tr.onclick=()=>{sel=id;render()};
+    body.appendChild(tr);
+  });
 }
-$('dn').oninput=$('up').oninput=$('base').oninput=render;
+function renderTeacher(){
+  $('tCard').hidden=!T();$('sCard').hidden=!T();if(!T())return;
+  const P=C[view],all=IDS.map(id=>({id,...P[id]}));
+  $('rankTitle').textContent=`🔒 ${view}월 시세 순위 (교사 전용)`;
+  const ol=$('rank');ol.innerHTML='';
+  [...all].sort((a,b)=>b.price-a.price||b.net-a.net).forEach(a=>ol.appendChild(el('li',
+    a.state==='wait'?`${a.id} — ${a.price} (평가 대기)`:`${a.id} — ${a.prev} → ${a.price} ${chFull(a)} · 합계 ${a.net>0?'+':''}${a.net}, ${a.rs.length}명`)));
+  const sl=$('sell');sl.innerHTML='';
+  all.filter(a=>a.state!=='wait'&&a.ch>0).sort((a,b)=>b.ch-a.ch).forEach(a=>sl.appendChild(el('li',`${a.id} — 차익 +${a.ch} (${a.prev} → ${a.price})`)));
+  const names=[...new Set(ratings.filter(r=>r.month===view).map(r=>r.name))];
+  $('who').textContent=`${view}월 참여 학생 ${names.length}명: ${names.join(', ')||'-'}`;
+  const ar=$('actRow');ar.innerHTML='';
+  MONTHS.forEach(m=>{
+    const b=el('button',`${m}월`,'tab'+(m===active?' on':''));
+    b.onclick=async()=>{try{await saveConf({active:m});$('status').textContent=`학생들은 이제 ${m}월을 평가해요.`}catch(e){$('status').textContent='저장 실패: '+e.message}render()};
+    ar.appendChild(b);
+  });
+  $('fixBtn').textContent=armed===view?(fixed[view]?'정말 취소할까요? 한 번 더 누르세요':'정말 확정할까요? 한 번 더 누르세요'):(fixed[view]?`🔓 ${view}월 확정 취소`:`🔒 ${view}월 시세 확정`);
+}
 
-let sep={}, pw='', timer=null;
-try{pw=sessionStorage.getItem('seat10-pw')||''}catch(e){}
-const api=(path,opt={})=>fetch('/api/'+path,{...opt,headers:{'content-type':'application/json','x-admin':pw}});
+// ---------- 이유 선택지 (입지 조건별)
+const REASONS=[
+['☀️ 일조권(햇빛·온도)',[
+['창가라 햇빛이 잘 들어와요',1],['등이 따뜻해서 좋아요',1],['바람이 잘 들어와요',1],['에어컨 바람이 시원해서 좋아요',1],['온도가 적당해요',1],['히터 바람이 잘 들어와요',1],['따뜻해서 좋아요',1],
+['햇빛이 눈부셔서 눈이 아파요',-1],['햇빛이 너무 많이 들어와요',-1],['에어컨·히터 바람이 바로 와서 추워요',-1],['겨울에 추울 것 같아요',-1],['문가라 추워요',-1],['창문 근처라 추워요',-1],['복도 쪽이라 찬바람이 들어와요',-1],['히터에서 멀어서 추워요',-1],['히터 바람이 너무 뜨거워요',-1],['더울 것 같아요',-1]]],
+['📺 교육환경(TV와 칠판, 선생님 시야)',[
+['칠판이 잘 보여요',1],['TV가 잘 보여요',1],['시계가 잘 보여요',1],['선생님이 잘 보여서 수업에 집중이 돼요',1],['선생님 사각지대라 편해요',1],
+['칠판이 잘 안 보여요',-1],['TV를 보려면 목을 돌려야 해서 아파요',-1],['TV가 잘 안 보여요',-1],['앞 친구 때문에 시야가 가려져요',-1],['선생님 시선이 바로 와서 부담스러워요',-1],['선생님 가리개를 건드리게 돼요',-1]]],
+['🚪 접근성(문, 사물함, 급식 등 편의시설)',[
+['문이 가까워서 빨리 나갈 수 있어요',1],['급식 줄을 빨리 설 수 있어요',1],['사물함이 가까워요',1],['학습지를 꺼내거나 제출하기 편해요',1],['입구가 넓어서 드나들기 편해요',1],
+['입구·통로가 좁아서 불편해요',-1],['나갈 때 걸려서 불편해요',-1],['문에서 멀어요',-1],['급식 받을 때 줄이 뒤에 있어 불편해요',-1],['급식·우유를 흘리면 바닥이 더러워져요',-1],['가방 둘 곳이 없어요',-1],['사물함이 뒤에 있어 시끄러워요',-1]]],
+['🏘️ 생활환경(짝, 소음, 구석)',[
+['구석이라 편해요',1],['아늑해요',1],['뒷자리라 좋아요',1],['앞·옆 친구와 떠들 수 있어요',1],['조용해요',1],
+['짝이 많아서 불편해요',-1],['가운데에 껴서 답답해요',-1],['막혀 있는 느낌이라 답답해요',-1],['친구들이 많이 지나다녀서 불편해요',-1],['지나다닐 때 책상이나 가방을 쳐요',-1],['주변이 시끄러워요',-1],['앞자리라 부담스러워요',-1],['뒤에서 친구들이 장난쳐서 불편해요',-1],['마주 보는 친구와 눈이 마주쳐요',-1]]],
+['🔒 프라이버시',[
+['개인 활동하기 좋아요',1],['프라이버시가 지켜져요',1],
+['친구들에게 다 보여요',-1],['프라이버시가 부족해요',-1]]],
+['🙂 전체적으로',[
+['무난해요',0],['딱히 장점이 없어요',-1],['잘 모르겠어요',0]]]
+];
+let tags=[], custom=[];
+try{custom=JSON.parse(localStorage.getItem('seat-custom-v3')||'[]')}catch(e){}
+const saveCustom=()=>{try{localStorage.setItem('seat-custom-v3',JSON.stringify(custom))}catch(e){}};
+function chip(text,pol,isCustom){
+  const b=el('button','','chip '+(pol>0?'p':pol<0?'n':'')+(tags.includes(text)?' on':''));b.type='button';
+  b.appendChild(document.createTextNode(text));
+  b.onclick=()=>{if(!tags.includes(text)&&tags.length>=6){$('msg').textContent='이유는 최대 6개까지 고를 수 있어요.';return}
+    $('msg').textContent='';tags=tags.includes(text)?tags.filter(t=>t!==text):[...tags,text];renderChips()};
+  if(isCustom){const x=el('span','✕','x');
+    x.onclick=e=>{e.stopPropagation();custom=custom.filter(c=>c!==text);tags=tags.filter(t=>t!==text);saveCustom();renderChips()};b.appendChild(x)}
+  return b;
+}
+function renderChips(){
+  const box=$('chipBox');box.innerHTML='';
+  REASONS.forEach(([g,items])=>{
+    const d=el('div','','grp');d.appendChild(el('div',g,'sub'));
+    const c=el('div','','chips');items.forEach(([t,p])=>c.appendChild(chip(t,p)));d.appendChild(c);box.appendChild(d);
+  });
+  if(custom.length){const d=el('div','','grp');d.appendChild(el('div','✏️ 내가 추가한 이유','sub'));
+    const c=el('div','','chips');custom.forEach(t=>c.appendChild(chip(t,0,true)));d.appendChild(c);box.appendChild(d)}
+}
+function addCustom(){
+  const t=$('newChip').value.trim().slice(0,30);if(!t)return;
+  if(!custom.includes(t)&&!REASONS.some(g=>g[1].some(i=>i[0]===t))){custom.push(t);saveCustom()}
+  if(!tags.includes(t)){if(tags.length>=6)$('msg').textContent='이유는 최대 6개까지 고를 수 있어요.';else tags.push(t)}
+  $('newChip').value='';renderChips();
+}
+$('addChip').onclick=addCustom;
+$('newChip').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addCustom()}};
 
+// ---------- 저장 (학생)
 $('save').onclick=async()=>{
-  const name=$('me').value.trim(),reason=$('reason').value.trim();
+  const name=$('me').value.trim(),extra=$('reason').value.trim(),reason=[...tags,extra].filter(Boolean).join(' · ');
+  if(asStudent)return $('msg').textContent='미리보기에서는 저장되지 않아요.';
   if(!name)return $('msg').textContent='이름을 먼저 입력하세요.';
   if(pick==null)return $('msg').textContent='호/불호 점수를 선택하세요.';
-  if(!reason)return $('msg').textContent='이유를 작성해야 저장돼요.';
+  if(!reason)return $('msg').textContent='이유를 하나 이상 골라 주세요.';
+  if(locked.includes(active))return $('msg').textContent=`${active}월 평가는 마감됐어요.`;
   try{
-    const r=await api('rate',{method:'POST',body:JSON.stringify({name,seat:sel,score:pick,reason})});
-    if(!r.ok)throw new Error((await r.json().catch(()=>({}))).error||r.status);
-    mine[key(sel)]={score:pick,reason};
-    try{localStorage.setItem('seat10-mine',JSON.stringify(mine))}catch(e){}
+    const r=await fetch('/api/rate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name,seat:sel,score:pick,tags,extra})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||r.status);
+    active=d.month||active;
+    mine[key(sel)]={score:pick,tags:[...tags],extra};
+    try{localStorage.setItem('seat-mine-v3',JSON.stringify(mine))}catch(e){}
     $('msg').textContent='저장됐어요 ✅';render();
-  }catch(e){$('msg').textContent='저장 실패: '+e.message}
+  }catch(e){$('msg').textContent='저장 실패: '+(e.message||e.code)}
 };
+
+// ---------- 저장 (교사)
+async function saveConf(partial){
+  const r=await api('conf',{method:'PUT',body:JSON.stringify(partial)});
+  if(!r.ok)throw new Error(r.status===401?'비밀번호 오류':r.status);
+  const c=(await r.json()).conf;
+  sep=c.sep||sep;fixed=c.fixed||{};active=c.active||active;locked=Object.keys(fixed).map(Number);
+  return c;
+}
 function sepUI(){
   const g=$('sepGrid');g.innerHTML='';
-  SEATS.forEach(x=>{const d=el('div');d.appendChild(el('label',x[0]));
-    const i=el('input');i.type='number';i.dataset.id=x[0];i.style.width='78px';i.value=sep[x[0]]??'';d.appendChild(i);g.appendChild(d)});
+  [...IDS].sort().forEach(id=>{const d=el('div');d.appendChild(el('label',id));
+    const i=el('input');i.type='number';i.dataset.id=id;i.style.width='84px';i.value=sep[id]??'';d.appendChild(i);g.appendChild(d)});
 }
-$('sepSave').onclick=async()=>{
+const readParams=()=>({dn:parseFloat($('dn').value)||0,up:parseFloat($('up').value)||0,base:parseFloat($('base').value)||450});
+$('dn').oninput=$('up').oninput=$('base').oninput=()=>{params=readParams();render()};
+$('cfgSave').onclick=async()=>{
   const n={};$('sepGrid').querySelectorAll('input').forEach(i=>{if(i.value!=='')n[i.dataset.id]=+i.value});
-  try{const r=await api('sep',{method:'PUT',body:JSON.stringify({sep:n})});
-    if(!r.ok)throw 0;sep=n;$('status').textContent='9월 시세 저장됨'}catch(e){$('status').textContent='9월 시세 저장 실패'}
+  sep=n;params=readParams();
+  try{await saveConf({sep,params});$('status').textContent='설정과 9월 시세를 저장했어요.'}catch(e){$('status').textContent='저장 실패: '+e.message}
   render();
 };
+$('fixBtn').onclick=async()=>{
+  if(armed!==view){
+    if(!fixed[view]&&IDS.every(id=>C[view][id].state==='wait')){$('status').textContent='평가가 아직 없어서 확정할 수 없어요.';return}
+    armed=view;render();setTimeout(()=>{if(armed===view){armed=null;render()}},4000);return;
+  }
+  armed=null;
+  if(fixed[view])delete fixed[view];
+  else{const P=C[view];fixed[view]={};IDS.forEach(id=>fixed[view][id]=P[id].price)}
+  try{await saveConf({fixed});$('status').textContent='저장했어요.'}catch(e){$('status').textContent='저장 실패: '+e.message}
+  render();
+};
+
+// ---------- 교사 로그인 / 불러오기
 async function load(){
   try{
     const r=await api('results');
     if(r.status===401){logout();$('status').textContent='비밀번호가 올바르지 않아요.';return false}
     if(!r.ok)throw new Error(r.status);
-    const d=await r.json(),first=!isTeacher;
-    ratings=d.ratings;sep=d.sep||{};isTeacher=true;
-    if(first)sepUI();
-    $('status').textContent=`교사 화면 · 평가 ${ratings.length}건 · ${new Date().toLocaleTimeString('ko-KR')}`;
+    const d=await r.json(),c=d.conf||{},first=!isTeacher;
+    ratings=d.ratings.map(norm);sep=c.sep||{};fixed=c.fixed||{};locked=Object.keys(fixed).map(Number);active=c.active||10;
+    if(first){isTeacher=true;view=active;if(c.params)params={...params,...c.params};
+      $('dn').value=params.dn;$('up').value=params.up;$('base').value=params.base;sepUI()}
+    if(!asStudent)$('status').textContent=`교사 화면 · 평가 ${ratings.length}건 · ${new Date().toLocaleTimeString('ko-KR')}`;
     $('tOut').hidden=false;render();return true;
   }catch(e){$('status').textContent='결과를 불러오지 못했어요: '+e.message;return false}
 }
 function logout(){
-  pw='';isTeacher=false;ratings=[];clearInterval(timer);$('tOut').hidden=true;$('status').textContent='';
-  try{sessionStorage.removeItem('seat10-pw')}catch(e){}render();
+  pw='';isTeacher=false;asStudent=false;ratings=[];sel=null;clearInterval(timer);$('tOut').hidden=true;$('status').textContent='';
+  try{sessionStorage.removeItem('seat-pw')}catch(e){}render();
 }
 async function start(){
   if(!(await load()))return;
-  try{sessionStorage.setItem('seat10-pw',pw)}catch(e){}
+  try{sessionStorage.setItem('seat-pw',pw)}catch(e){}
   clearInterval(timer);timer=setInterval(load,60000);
 }
 $('tLogin').onclick=e=>{e.preventDefault();const p=prompt('교사 비밀번호');if(!p)return;pw=p;start()};
+$('seedBtn').onclick=async()=>{
+  const f=$('seedFile').files[0],msg=$('seedMsg');
+  if(!f){msg.textContent='kv-seed.json 파일을 먼저 골라 주세요.';return}
+  try{
+    const arr=JSON.parse(await f.text());
+    if(!Array.isArray(arr))throw 0;
+    let done=0;
+    for(let i=0;i<arr.length;i+=40){
+      const r=await api('import',{method:'POST',body:JSON.stringify({items:arr.slice(i,i+40)})});
+      if(!r.ok)throw 0;
+      done+=(await r.json()).n;
+      msg.textContent=done+' / '+arr.length+' 불러오는 중…';
+    }
+    msg.textContent='완료! '+done+'건을 넣었어요. 새로고침합니다.';
+    setTimeout(load,1500);
+  }catch(e){msg.textContent='실패했어요. 파일이 맞는지, 로그인 상태인지 확인해 주세요.'}
+};
 $('tRef').onclick=e=>{e.preventDefault();load()};
 $('tLogout').onclick=e=>{e.preventDefault();logout()};
+
 render();
 if(pw)start();
+else fetch('/api/state').then(r=>r.json()).then(d=>{active=d.active||10;locked=d.locked||[];render()}).catch(()=>{});
 </script>
 </body>
 </html>

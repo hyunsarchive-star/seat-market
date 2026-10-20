@@ -1,7 +1,7 @@
-name = "seat-market"
+name = "oct-realestate"
 pages_build_output_dir = "./public"
 compatibility_date = "2025-01-01"
 
 [[kv_namespaces]]
 binding = "SEATS"
-id = "a8b9ed79437044a1985386b5f6a5e6fc"
+id = "여기에_KV_네임스페이스_ID"
